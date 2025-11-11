@@ -7,35 +7,42 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authroutes");
 const userRoutes = require("./routes/userroutes");
+const messageRoutes = require("./routes/messageRoutes");
 
 connectDB();
 
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/message", messageRoutes);
 
 app.get("/", (req, res) => {
   res.send("<h1>Welcome to the chat application</h1>");
 });
 
-
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173/",
-    methods: ["GET", "POST"],
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   },
 });
 
 io.on("connection", (socket) => {
   console.log("New client connected ", socket.id);
-  
+
   socket.on("setup", (userId) => {
     socket.join(userId);
     socket.emit("connected");
@@ -43,14 +50,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send-message", (msg) => {
-    if(!msg || !msg.recipient) return 
+    if (!msg || !msg.recipient) return;
     socket.to(msg.recipient).emit("receive-message", msg);
   });
 
   socket.on("disconnect", () => {
     console.log("Client disconnected", socket.id);
-  })
-})
+  });
+});
 
 const PORT = process.env.PORT;
 server.listen(PORT, () => {

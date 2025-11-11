@@ -5,18 +5,20 @@ const auth = (req, res, next) => {
         const authHeader = req.headers.authorization || req.headers.Authorization
 
         if(!authHeader || !authHeader.startsWith("Bearer ")){
+            console.log("Error in authHeader");
             return res.status(401).json({message: "No token. Authentication denied."})
         }
 
-        const token = authHeader.splits(" ")[1];
+        const token = authHeader.split(" ")[1];
 
         if(!token){
+            console.log("Error in token if ")
             return res.status(401).json({message: "Token missing"});
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        res.user = {id : decoded._id || decoded.userId || decoded.id};
+        req.user = {_id : decoded._id || decoded.userId || decoded.id};
         next();
     }catch(err){
         console.error("Auth middleware error", err.message);

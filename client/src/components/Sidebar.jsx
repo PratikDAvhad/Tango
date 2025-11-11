@@ -1,12 +1,13 @@
-const { useEffect, useState } = require("react");
-const api = require("../api/axiosConfig");
+import { useEffect, useState } from "react";
+import { api } from "../api/axiosConfig";
 
-const Sidebar = ({ onSelectUser, selectedUserId }) => {
+export const Sidebar = ({ onSelectUser, selectedUserId }) => {
   const [users, setUsers] = useState([]);
 
-  useEffect(() => {
+  useEffect(() => { 
     const fetchUsers = async () => {
       try {
+        
         const { data } = await api.get("/user/all");
         setUsers(data);
       } catch (err) {

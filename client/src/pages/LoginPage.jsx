@@ -31,7 +31,7 @@ const LoginPage = () => {
           token: data.token,
         })
       );
-      navigate("/");
+      navigate("/chats");
     }else{
       alert(data.message);
     }

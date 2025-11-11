@@ -2,7 +2,7 @@ const User = require("../models/User");
 
 const getAllUsers = async (req, res) => {
   try {
-    const currUserId = req.user.id;
+    const currUserId = req.user._id;
 
     const users = await User.find({ _id: { $ne: currUserId } })
       .select("_id name email profilePic")
