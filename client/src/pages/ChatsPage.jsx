@@ -1,17 +1,16 @@
 import React, { useState } from "react";
-import {useNavigate} from "react-router-dom"
-import {Sidebar} from "../components/Sidebar";
-import {ChatWindow} from "../components/ChatWindow";
-import {MessageInput} from "../components/MessageInput";
-
+import { useNavigate } from "react-router-dom";
+import { Sidebar } from "../components/Sidebar";
+import { ChatWindow } from "../components/ChatWindow";
+import { MessageInput } from "../components/MessageInput";
 
 export const ChatsPage = () => {
   const stored = JSON.parse(localStorage.getItem("userInfo"));
-  
-  if(!stored){
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+
+  if (!stored) {
     navigate("/login");
-  } 
+  }
   const currentUser = stored?.user;
 
   const [selectedUser, setSelectedUser] = useState(null);
@@ -37,7 +36,7 @@ export const ChatsPage = () => {
         <MessageInput
           selectedUser={selectedUser}
           currentUser={currentUser}
-          onMessageSent={handleMessageSent}
+          handleMessageSent={handleMessageSent}
         />
       </div>
     </div>

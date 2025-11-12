@@ -51,7 +51,9 @@ io.on("connection", (socket) => {
 
   socket.on("send-message", (msg) => {
     if (!msg || !msg.recipient) return;
-    socket.to(msg.recipient).emit("receive-message", msg);
+    console.log(msg);
+    socket.to(msg.recipient).emit("recieve-message", msg);
+    socket.emit("recieve-message", msg);
   });
 
   socket.on("disconnect", () => {

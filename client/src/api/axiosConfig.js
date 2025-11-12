@@ -18,15 +18,17 @@ api.interceptors.request.use((req) => {
   console.log("Authorization header ", req.headers.Authorization);
   return req;
 });
-// api.interceptors.response.use(
-//     (response) => response,
-//     (error) => {
-//         if(error.response && error.response.status === 401){
-//             localStorage.removeItem("userInfo");
-//         }
-//         return Promise.reject(error);
-//     }
-// );
+
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if(error.response && error.response.status === 401){
+            localStorage.removeItem("userInfo");
+            window.location.assign("/login");
+        }
+        return Promise.reject(error);
+    }
+);
 
 export const setAuthToken = (token) => {
   if (token) api.defaults.headers.common["Authorization"] = `Bearer ${token}`;

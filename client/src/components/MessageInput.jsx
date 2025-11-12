@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {api} from "../api/axiosConfig";
 import { useSocket } from "../context/socketContext";
 
-export const MessageInput = ({ selectedUser, currentUser, onSentMessage }) => {
+export const MessageInput = ({ selectedUser, currentUser, handleMessageSent }) => {
   const [text, setText] = useState("");
   const socket = useSocket();
 
@@ -23,15 +23,18 @@ export const MessageInput = ({ selectedUser, currentUser, onSentMessage }) => {
         ...data,
         sender: currentUser._id,
       };
-
+      console.log("Before emit")
+      console.log(currentUser._id+ "curr")
+      console.log(selectedUser._id+ "selec")
+      console.log(text+ "content")
       socket.emit("send-message", {
         sender: currentUser._id,
         recipient: selectedUser._id,
         content: text.trim(),
       });
-
-      onMessageSent(messageForUI);
-
+      console.log("After emit")
+      handleMessageSent(messageForUI);
+      console.log("Before cleared")
       setText("");
     } catch (err) {
       console.log(err);

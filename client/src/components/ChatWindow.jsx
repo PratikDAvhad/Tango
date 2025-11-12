@@ -11,7 +11,8 @@ export const ChatWindow = ({ selectedUser, currentUser }) => {
     if (!selectedUser) return;
     const fetchMessages = async () => {
       try {
-        const { data } = await api.get(`/message/${selectedUser}`);
+        const { data } = await api.get(`/message/${selectedUser._id}`);
+        console.log("all messages in the chatWindow", data);
         setChatMessages(data);
         scrollToBottom();
       } catch (err) {
@@ -23,6 +24,7 @@ export const ChatWindow = ({ selectedUser, currentUser }) => {
 
   useEffect(() => {
     if (!socket) {
+      console.log("Socket not ready yet, skipping message listener")
       return;
     }
     const handler = (msg) => {
@@ -30,6 +32,7 @@ export const ChatWindow = ({ selectedUser, currentUser }) => {
         msg.sender === selectedUser?._id ||
         msg.recipient === selectedUser?._id
       ) {
+        console.log(msg);
         setChatMessages((prev) => [...prev, msg]);
         scrollToBottom();
       }

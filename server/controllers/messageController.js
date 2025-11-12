@@ -3,7 +3,7 @@ const User = require("../models/User");
 
 const getMessages = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const {userId} = req.params;
     const myId = req.user._id;
 
     const messages = await Message.find({
@@ -18,7 +18,7 @@ const getMessages = async (req, res) => {
         },
       ],
     }).sort({ createdAt: 1 });
-
+    console.log("messages in the message controller",messages);
     res.status(200).json(messages);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
