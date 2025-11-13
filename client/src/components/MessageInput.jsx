@@ -41,6 +41,10 @@ export const MessageInput = ({ selectedUser, currentUser, handleMessageSent }) =
     }
   };
 
+  if(!selectedUser){
+    return;
+  }
+
   return (
     <form className="p-3 border-top" onSubmit={sendMessage}>
       <div className="input-group">

@@ -26,18 +26,47 @@ export const ChatsPage = () => {
   };
 
   return (
-    <div className="d-flex" style={{ height: "100vh" }}>
-      <Sidebar
-        onSelectUser={handleSelectUser}
-        selectedUserId={selectedUser?._id}
-      />
-      <div className="flex-grow-1 d-flex flex-column">
-        <ChatWindow selectedUser={selectedUser} currentUser={currentUser} />
-        <MessageInput
-          selectedUser={selectedUser}
-          currentUser={currentUser}
-          handleMessageSent={handleMessageSent}
+    <div
+      className="d-flex"
+      style={{
+        height: "100vh",
+        overflow: "hidden", // prevent the whole page from scrolling
+      }}
+    >
+      <div style={{ width: "300px",}}>
+        <Sidebar
+          onSelectUser={handleSelectUser}
+          selectedUserId={selectedUser?._id}
         />
+      </div>
+      <div
+        className="flex-grow-1 d-flex flex-column"
+        style={{ backgroundColor: "#f8f9fa" }}
+      >
+        <div
+          style={{
+            flex: 1,
+            overflowY: "auto", // only this area scrolls
+          }}
+        >
+          <ChatWindow
+            selectedUser={selectedUser}
+            currentUser={currentUser}
+            localMessages={localMessages}
+          />
+        </div>
+        <div
+          style={{
+            borderTop: "1px solid #ccc",
+            backgroundColor: "white",
+          }}
+        >
+          <MessageInput
+            selectedUser={selectedUser}
+            currentUser={currentUser}
+            handleMessageSent={handleMessageSent}
+          />
+        </div>
       </div>
     </div>
   );

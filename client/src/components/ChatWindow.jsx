@@ -14,7 +14,7 @@ export const ChatWindow = ({ selectedUser, currentUser }) => {
         const { data } = await api.get(`/message/${selectedUser._id}`);
         console.log("all messages in the chatWindow", data);
         setChatMessages(data);
-        scrollToBottom();
+        setTimeout(() => scrollToBottom(), 100);
       } catch (err) {
         console.log(err);
       }
@@ -24,7 +24,7 @@ export const ChatWindow = ({ selectedUser, currentUser }) => {
 
   useEffect(() => {
     if (!socket) {
-      console.log("Socket not ready yet, skipping message listener")
+      console.log("Socket not ready yet, skipping message listener");
       return;
     }
     const handler = (msg) => {
@@ -34,7 +34,7 @@ export const ChatWindow = ({ selectedUser, currentUser }) => {
       ) {
         console.log(msg);
         setChatMessages((prev) => [...prev, msg]);
-        scrollToBottom();
+        setTimeout(() => scrollToBottom(), 100);
       }
     };
 
@@ -62,7 +62,7 @@ export const ChatWindow = ({ selectedUser, currentUser }) => {
 
       <div
         className="flex-grow-1 p-3 overflow-auto"
-        style={{ background: "#f7f7f7" }}
+        style={{ background: "#f7f7f7", minHeight: 0 }}
       >
         {chatMessages.map((m) => {
           const mine =
@@ -99,5 +99,3 @@ export const ChatWindow = ({ selectedUser, currentUser }) => {
     </div>
   );
 };
-
-
