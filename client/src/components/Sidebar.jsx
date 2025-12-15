@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/axiosConfig";
 
-export const Sidebar = ({ onSelectUser, selectedUserId }) => {
+export const Sidebar = ({ onSelectUser, selectedUserId, currentUser }) => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
 
@@ -23,11 +23,8 @@ export const Sidebar = ({ onSelectUser, selectedUserId }) => {
 
   return (
     <div
-      className="d-flex flex-column border-end vh-100"
-      style={{
-        width: "300px",
-        backgroundColor: "#f8f9fa",
-      }}
+      className="d-flex flex-column border-end "
+      style={{ height: "100%", width: "300px" }}
     >
       {/* Header */}
       <div
@@ -38,7 +35,10 @@ export const Sidebar = ({ onSelectUser, selectedUserId }) => {
           zIndex: 2,
         }}
       >
-        <h5 className="mb-2 fw-semibold text-primary">Contacts</h5>
+        <div className="d-flex">
+          <h5 className="mb-2 fw-semibold text-primary">Contacts</h5>
+          <h3 style={{ fontSize: "0.95rem" , padding: "5px"}}>{currentUser.name}</h3>
+        </div>
         <input
           type="text"
           placeholder="Search users..."

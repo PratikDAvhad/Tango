@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
 import { ChatWindow } from "../components/ChatWindow";
 import { MessageInput } from "../components/MessageInput";
+import {MenuBar} from "../components/MenuBar";
 
 export const ChatsPage = () => {
   const stored = JSON.parse(localStorage.getItem("userInfo"));
@@ -33,10 +34,14 @@ export const ChatsPage = () => {
         overflow: "hidden", // prevent the whole page from scrolling
       }}
     >
-      <div style={{ width: "300px",}}>
+      <div>
+        <MenuBar/>
+      </div>
+      <div style={{width: "300pxs"}}>
         <Sidebar
           onSelectUser={handleSelectUser}
           selectedUserId={selectedUser?._id}
+          currentUser={currentUser}
         />
       </div>
       <div
