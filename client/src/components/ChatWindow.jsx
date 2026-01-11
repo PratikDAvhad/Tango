@@ -1,89 +1,53 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { api } from "../api/axiosConfig";
 import { useSocket } from "../context/socketContext";
+import { AuthContext } from "../context/authContext";
+import { ChatsContext } from "../context/chatsContext";
 
-export const ChatWindow = ({ selectedUser, currentUser }) => {
-  const [chatMessages, setChatMessages] = useState([]);
-  const socket = useSocket();
-  const endRef = useRef();
+export const ChatWindow = () => {
+  const { user } = useContext(AuthContext);
+  const currentUser = user.user;
+  const { selectedUser, endRef, chatMessages } = useContext(ChatsContext);
 
-  useEffect(() => {
-    if (!selectedUser) return;
-    const fetchMessages = async () => {
-      try {
-        const { data } = await api.get(`/message/${selectedUser._id}`);
-        console.log("all messages in the chatWindow", data);
-        setChatMessages(data);
-        setTimeout(() => scrollToBottom(), 100);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchMessages();
-  }, [selectedUser]);
-
-  useEffect(() => {
-    if (!socket) {
-      console.log("Socket not ready yet, skipping message listener");
-      return;
-    }
-    const handler = (msg) => {
-      if (
-        msg.sender === selectedUser?._id ||
-        msg.recipient === selectedUser?._id
-      ) {
-        console.log(msg);
-        setChatMessages((prev) => [...prev, msg]);
-        setTimeout(() => scrollToBottom(), 100);
-      }
-    };
-
-    socket.on("recieve-message", handler);
-    return () => socket.off("recieve-message", handler);
-  }, [socket, selectedUser]);
-
-  const scrollToBottom = () => {
-    endRef?.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  console.log("Chat Messages ", chatMessages);
 
   if (!selectedUser) {
     return (
-      <div className="d-flex align-items-center justify-content-center h-100">
+      <div className="chat-empty d-flex align-items-center justify-content-center flex-grow-1">
         Select a contect to start chat
       </div>
     );
   }
 
   return (
-    <div className="d-flex flex-column h-100">
-      <div className="border-bottom p-3">
+    <div className="chat-window d-flex flex-column flex-grow-1">
+      <div className="chat-header border-bottom px-3 py-2">
         <strong>{selectedUser.name}</strong>
       </div>
 
       <div
-        className="flex-grow-1 p-3 overflow-auto"
-        style={{ background: "#f7f7f7", minHeight: 0 }}
+        className="chat-messages flex-grow-1 overflow-auto px-3 py-2"
       >
-        {chatMessages.map((m) => {
+        {chatMessages.map((m, index) => {
           const mine =
             m.sender.toString() === currentUser._id.toString() ||
             m.senderId === currentUser._id; // accommodate both shapes
           return (
             <div
-              key={m._id || Math.random()}
+              key={index}
               className={`d-flex mb-2 ${
                 mine ? "justify-content-end" : "justify-content-start"
               }`}
             >
               <div
-                className={`p-2 rounded ${
-                  mine ? "bg-primary text-white" : "bg-white border"
+                className={`chat-bubble ${
+                  mine ? "mine" : "theirs"
                 }`}
                 style={{ maxWidth: "70%" }}
               >
                 {m.content}
                 <div
-                  className="small text-muted d-block text-end"
+                  className="chat-time"
                   style={{ fontSize: 10 }}
                 >
                   {new Date(

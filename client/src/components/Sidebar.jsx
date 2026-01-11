@@ -1,30 +1,14 @@
-import { useEffect, useState } from "react";
-import { api } from "../api/axiosConfig";
+import { useContext, useEffect, useState } from "react";
+import "../App.css";
+import { ChatsContext } from "../context/chatsContext";
 
-export const Sidebar = ({ onSelectUser, selectedUserId, currentUser }) => {
-  const [users, setUsers] = useState([]);
-  const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const { data } = await api.get("/user/all");
-        setUsers(data);
-      } catch (err) {
-        console.error("Error fetching users:", err);
-      }
-    };
-    fetchUsers();
-  }, []);
-
-  const filteredUsers = users.filter((u) =>
-    u.name.toLowerCase().includes(search.toLowerCase())
-  );
+export const Sidebar = () => {
+  const { allUsers, handleSelectedUser } = useContext(ChatsContext);
 
   return (
     <div
       className="d-flex flex-column border-end "
-      style={{ height: "100%", width: "300px" }}
+      style={{ height: "100%", width: "300px", marginLeft: "50px" }}
     >
       {/* Header */}
       <div
@@ -37,84 +21,35 @@ export const Sidebar = ({ onSelectUser, selectedUserId, currentUser }) => {
       >
         <div className="d-flex">
           <h5 className="mb-2 fw-semibold text-primary">Contacts</h5>
-          <h3 style={{ fontSize: "0.95rem" , padding: "5px"}}>{currentUser.name}</h3>
         </div>
-        <input
-          type="text"
-          placeholder="Search users..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="form-control form-control-sm"
-        />
       </div>
 
       {/* Contacts list */}
       <ul
         className="list-group list-group-flush flex-grow-1"
         style={{
+          height: "85vh",
           overflowY: "auto",
           backgroundColor: "#fdfdfd",
         }}
       >
-        {filteredUsers.map((u) => (
-          <li
-            key={u._id}
-            className={`list-group-item d-flex align-items-center border-0 border-bottom ${
-              selectedUserId === u._id ? "active" : ""
-            }`}
-            style={{
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-              backgroundColor:
-                selectedUserId === u._id ? "#0d6efd" : "transparent",
-              color: selectedUserId === u._id ? "white" : "inherit",
-            }}
-            onClick={() => onSelectUser(u)}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor =
-                selectedUserId === u._id ? "#0d6efd" : "#e9ecef")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor =
-                selectedUserId === u._id ? "#0d6efd" : "transparent")
-            }
-          >
-            <img
-              src={u.profilePic || "/placeholder.png"}
-              alt=""
-              className="rounded-circle me-3 border"
-              style={{
-                width: 45,
-                height: 45,
-                objectFit: "cover",
-                borderColor:
-                  selectedUserId === u._id ? "white" : "rgba(0,0,0,0.1)",
-              }}
-            />
-            <div
-              style={{
-                flex: 1,
-                overflow: "hidden",
-              }}
+        {allUsers.map((u, index) => {
+          return (
+            <li
+              key={index}
+              className="chat-item"
+              onClick={() => handleSelectedUser(u)}
             >
-              <div
-                className="fw-semibold text-truncate"
-                style={{ fontSize: "0.95rem" }}
-              >
-                {u.name}
+              <div className="d-flex justify-content-between align-items-center px-3">
+                <span className="chat-name">{u.name}</span>
+                <span className="chat-date">{"date"}</span>
               </div>
-              <div
-                className="small text-muted text-truncate"
-                style={{
-                  fontSize: "0.8rem",
-                  color: selectedUserId === u._id ? "#e6e6e6" : "#6c757d",
-                }}
-              >
-                {u.email}
+              <div className="d-flex px-3">
+                <span className="chat-message">{"Latest Message"}</span>
               </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

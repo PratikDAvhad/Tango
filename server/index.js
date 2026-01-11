@@ -41,19 +41,17 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("New client connected ", socket.id);
 
   socket.on("setup", (userId) => {
     socket.join(userId);
     socket.emit("connected");
-    console.log("User joined room : ", userId);
+    
   });
 
   socket.on("send-message", (msg) => {
     if (!msg || !msg.recipient) return;
     // console.log(msg);
-    socket.to(msg.recipient).emit("recieve-message", msg);
-    socket.emit("recieve-message", msg);
+    io.to(msg.recipient).emit("receive-message", msg);
   });
 
   socket.on("disconnect", () => {

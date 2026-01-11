@@ -4,9 +4,11 @@ const User = require("../models/User");
 
 const registerUser = async (req, res) => {
   try {
+    console.log("In the register controller ")
+    console.log("req body in register" + req.body);
     const { name, email, password } = req.body;
     const existingUser = await User.findOne({ email });
-
+    console.log(existingUser);
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
@@ -19,9 +21,7 @@ const registerUser = async (req, res) => {
       password: hashedPassword,
     });
 
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "30m",
-    });
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
 
     res.status(201).json({ user, token });
   } catch (err) {
@@ -45,9 +45,7 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "30m",
-    });
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
 
     res.status(200).json({ user, token });
   } catch (err) {
