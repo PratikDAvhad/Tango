@@ -29,6 +29,14 @@ export const SocketProvider = ({ children }) => {
     };
   }, [currentUser?._id]);
 
+  // 2️ Emit online status when user is ready
+  useEffect(() => {
+    if (!socket || !currentUser?._id) return;
+
+    socket.emit("user-online", currentUser._id);
+    console.log("User online emitted:", currentUser._id);
+  }, [socket, currentUser?._id]);
+
   return (
     <SocketContext.Provider value={{ socket }}>
       {children}

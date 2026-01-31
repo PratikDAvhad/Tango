@@ -1,7 +1,8 @@
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { MainPage } from "./pages/MainPage";
@@ -12,6 +13,8 @@ import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "./context/authContext";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { PublicRoute } from "./routes/PublicRoute";
+import FriendRequests from "./pages/FriendsRequest";
+import AddFriend from "./pages/AddFriend";
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -43,6 +46,25 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/addFriend"
+          element={
+            <ProtectedRoute>
+              <AddFriend />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/friendReq"
+          element={
+            <ProtectedRoute>
+              <FriendRequests />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to={"/chats"} replace />} />
       </Routes>
     </>
   );

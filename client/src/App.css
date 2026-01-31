@@ -101,3 +101,176 @@
   overflow-y: auto;
   border-right: 1px solid #dee2e6;
 }
+
+.start-chat-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  height: 45px;
+  width: 45px;
+  border-radius: 10px;
+  background-color: #007bff;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  z-index: 5;
+}
+
+.start-chat-btn:hover {
+  background-color: #0056b3;
+}
+
+.user-list-popup {
+  position: absolute;
+  bottom: 80px;
+  right: 20px;
+  width: 220px;
+  max-height: 300px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.popup-header {
+  padding: 8px 12px;
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.popup-body {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.user-item {
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.user-item:hover {
+  background: #f2f2f2;
+}
+
+.online-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  margin-left: 6px;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.dropdown-wrapper {
+  position: relative;
+}
+
+.dropdown-wrapper button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 40px;
+  width: 260px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.add-friend-box {
+  display: flex;
+  gap: 8px;
+}
+
+.add-friend-box input {
+  flex: 1;
+  padding: 5px;
+  font-size: 13px;
+}
+
+.add-friend-box button {
+  font-size: 12px;
+}
+
+.notification-wrapper {
+  position: relative;
+}
+
+.bell-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: red;
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+
+.notification-dropdown {
+  position: absolute;
+  right: 0;
+  top: 40px;
+  width: 260px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.notification-item button {
+  font-size: 12px;
+}
+
+.empty-text {
+  font-size: 13px;
+  color: gray;
+  text-align: center;
+}

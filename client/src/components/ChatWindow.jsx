@@ -1,63 +1,62 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
-import { api } from "../api/axiosConfig";
-import { useSocket } from "../context/socketContext";
+import React, { useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import { ChatsContext } from "../context/chatsContext";
 
 export const ChatWindow = () => {
   const { user } = useContext(AuthContext);
   const currentUser = user.user;
-  const { selectedUser, endRef, chatMessages } = useContext(ChatsContext);
-
-  console.log("Chat Messages ", chatMessages);
+  const { selectedUser, endRef, chatMessages, isUserOnline } =
+    useContext(ChatsContext);
 
   if (!selectedUser) {
     return (
       <div className="chat-empty d-flex align-items-center justify-content-center flex-grow-1">
-        Select a contect to start chat
+        Select a contact to start chat
       </div>
     );
   }
-
+  console.log(chatMessages, "Chat Messages in the chatWindow");
+  console.log("Current user in the chatWindow ", currentUser);
   return (
     <div className="chat-window d-flex flex-column flex-grow-1">
-      <div className="chat-header border-bottom px-3 py-2">
+      {/* HEADER */}
+      <div className="chat-header border-bottom px-3 py-2 d-flex justify-content-between">
         <strong>{selectedUser.name}</strong>
+        <h6>{isUserOnline(selectedUser?._id) ? "Online" : "Offline"}</h6>
       </div>
 
-      <div
-        className="chat-messages flex-grow-1 overflow-auto px-3 py-2"
-      >
-        {chatMessages.map((m, index) => {
-          const mine =
-            m.sender.toString() === currentUser._id.toString() ||
-            m.senderId === currentUser._id; // accommodate both shapes
+      {/* MESSAGES */}
+      <div className="chat-messages flex-grow-1 overflow-auto px-3 py-2">
+        {chatMessages.map((m) => {
+          const isMine = m.sender?._id === currentUser._id;
+
           return (
             <div
-              key={index}
+              key={m._id}
               className={`d-flex mb-2 ${
-                mine ? "justify-content-end" : "justify-content-start"
+                isMine ? "justify-content-end" : "justify-content-start"
               }`}
             >
               <div
-                className={`chat-bubble ${
-                  mine ? "mine" : "theirs"
-                }`}
+                className={`chat-bubble ${isMine ? "mine" : "theirs"}`}
                 style={{ maxWidth: "70%" }}
               >
-                {m.content}
+                <div>{m.content}</div>
+
                 <div
-                  className="chat-time"
-                  style={{ fontSize: 10 }}
+                  className="chat-time text-muted"
+                  style={{ fontSize: "10px" }}
                 >
-                  {new Date(
-                    m.createdAt || m.timestamp || Date.now()
-                  ).toLocaleTimeString()}
+                  {new Date(m.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </div>
               </div>
             </div>
           );
         })}
+
         <div ref={endRef} />
       </div>
     </div>
