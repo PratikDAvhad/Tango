@@ -20,7 +20,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: "https://tango-3pkz1njg6-pratik-avhads-projects.vercel.app/",
+    origin: "https://tango-3pkz1njg6-pratik-avhads-projects.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -49,7 +49,7 @@ mongoose.connection.on("error", (err) => {
 
 const io = new Server(server, {
   cors: {
-    origin: "https://tango-3pkz1njg6-pratik-avhads-projects.vercel.app/",
+    origin: "https://tango-3pkz1njg6-pratik-avhads-projects.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
