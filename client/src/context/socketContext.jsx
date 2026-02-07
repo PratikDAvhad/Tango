@@ -9,7 +9,7 @@ export const SocketProvider = ({ children }) => {
   const { user } = useContext(AuthContext); // 👈 get user
   const currentUser = user?.user;
   useEffect(() => {
-    const newSocket = io("http://localhost:5000", { withCredentials: true });
+    const newSocket = io("https://tango-1btr.onrender.com/", { withCredentials: true });
     setSocket(newSocket);
 
     newSocket.on("connect", () => {

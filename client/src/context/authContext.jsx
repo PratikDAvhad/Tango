@@ -49,7 +49,7 @@ export const AuthContextProvider = ({ children }) => {
 
     try {
       const res = await api.post(
-        "http://localhost:5000/api/auth/register",
+        "https://tango-1btr.onrender.com/api/auth/register",
         registerInfo
       );
       console.log("response below res", res.data.user);
@@ -72,7 +72,7 @@ export const AuthContextProvider = ({ children }) => {
 
     try {
       const res = await api.post(
-        "http://localhost:5000/api/auth/login",
+        "https://tango-1btr.onrender.com/api/auth/login",
         loginInfo
       );
       console.log("response below res", res.data.user);
