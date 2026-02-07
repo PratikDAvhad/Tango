@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -11,8 +12,6 @@ const messageRoutes = require("./routes/messageRoutes");
 const conversationRoutes = require("./routes/conversationRoutes");
 const friendRoutes = require("./routes/friendRequestRoutes");
 
-connectDB();
-
 const onlineUsers = new Map();
 // userId -> socketId
 
@@ -23,6 +22,7 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
@@ -39,10 +39,19 @@ app.get("/", (req, res) => {
   res.send("<h1>Welcome to the chat application</h1>");
 });
 
+mongoose.connection.on("connected", () => {
+  console.log("🟢 MongoDB connected successfully");
+});
+
+mongoose.connection.on("error", (err) => {
+  console.error("🔴 MongoDB connection error:", err);
+});
+
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
   },
 });
@@ -79,6 +88,12 @@ io.on("connection", (socket) => {
 });
 
 const PORT = process.env.PORT;
-server.listen(PORT, () => {
-  console.log("server is listening on ", PORT);
-});
+const startServer = async () => {
+  await connectDB();
+
+  server.listen(PORT, () => {
+    console.log("🚀 Server running on port", PORT);
+  });
+};
+
+startServer();
