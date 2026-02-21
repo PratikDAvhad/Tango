@@ -4,6 +4,7 @@ import { GeneralContext } from "../context/generalContext";
 import { AuthContext } from "../context/authContext";
 import FriendRequests from "../pages/FriendsRequest";
 import AddFriend from "../pages/AddFriend";
+import { api } from "../api/axiosConfig";
 const Navbar = () => {
   const { menu, handleMenu } = useContext(GeneralContext);
   const { user, logoutUser } = useContext(AuthContext);
@@ -19,7 +20,7 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    fetchCount();
+    user && fetchCount();
   }, []);
 
   const [openNotif, setOpenNotif] = useState(false);

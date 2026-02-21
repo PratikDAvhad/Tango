@@ -27,12 +27,12 @@ export const ChatWindow = () => {
 
       {/* MESSAGES */}
       <div className="chat-messages flex-grow-1 overflow-auto px-3 py-2">
-        {chatMessages.map((m) => {
+        {chatMessages.map((m, index) => {
           const isMine = m.sender?._id === currentUser._id;
 
           return (
             <div
-              key={m._id}
+              key={m._id || index}
               className={`d-flex mb-2 ${
                 isMine ? "justify-content-end" : "justify-content-start"
               }`}

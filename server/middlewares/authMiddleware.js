@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const auth = (req, res, next) => {
     try{
         const authHeader = req.headers.authorization || req.headers.Authorization
-
+        console.log(authHeader);
         if(!authHeader || !authHeader.startsWith("Bearer ")){
             console.log("Error in authHeader");
             return res.status(401).json({message: "No token. Authentication denied."})
