@@ -26,6 +26,21 @@ const userSchema = new Schema(
     },
 
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+
+    about: {
+      type: String,
+      default: "",
+    },
+
+    phone: {
+      type: String,
+      default: "",
+    },
+
+    location: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true },
 );

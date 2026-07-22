@@ -35,7 +35,6 @@ export const Sidebar = () => {
         position: "relative",
         height: "100%",
         width: "300px",
-        marginLeft: "50px",
       }}
     >
       {/* Header */}

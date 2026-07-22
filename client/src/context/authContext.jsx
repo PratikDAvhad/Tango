@@ -11,6 +11,8 @@ export const AuthContextProvider = ({ children }) => {
     password: "",
   });
 
+  const [profilePic, setProfilePic] = useState(null);
+
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
@@ -48,17 +50,25 @@ export const AuthContextProvider = ({ children }) => {
     e.preventDefault();
 
     try {
-      const res = await api.post(
-        "http://localhost:5000/api/auth/register",
-        registerInfo
-      );
-      console.log("response below res", res.data.user);
+      const formData = new FormData();
+
+      formData.append("name", registerInfo.name);
+      formData.append("email", registerInfo.email);
+      formData.append("password", registerInfo.password);
+      if (profilePic) {
+        formData.append("profilePic", profilePic);
+      }
+
+      console.log("Image in profilePage : ProfilePic ====> ", profilePic);
+
+      const res = await api.post("/auth/register", formData);
+      console.log("response below res", res.data);
       localStorage.setItem(
         "userInfo",
         JSON.stringify({
           user: res.data.user,
           token: res.data.token,
-        })
+        }),
       );
       setUser(res.data);
     } catch (err) {
@@ -71,17 +81,16 @@ export const AuthContextProvider = ({ children }) => {
     e.preventDefault();
 
     try {
-      const res = await api.post(
-        "http://localhost:5000/api/auth/login",
-        loginInfo
-      );
+      // check for login error
+      console.error("❌ check for login info: " + loginInfo.email);
+      const res = await api.post("/auth/login", loginInfo);
       console.log("response below res", res.data.user);
       localStorage.setItem(
         "userInfo",
         JSON.stringify({
           user: res.data.user,
           token: res.data.token,
-        })
+        }),
       );
       setUser(res.data);
     } catch (err) {
@@ -92,9 +101,32 @@ export const AuthContextProvider = ({ children }) => {
 
   const logoutUser = useCallback(() => {
     localStorage.removeItem("userInfo");
-    
+
     setUser(null);
   }, []);
+
+  const refreshUser = async () => {
+    console.log("1");
+
+    try {
+      const { data } = await api.get("/user/me");
+      console.log("2");
+
+      const updatedUser = {
+        user: data,
+        token: user.token,
+      };
+
+      setUser(updatedUser);
+      console.log("3");
+
+      localStorage.setItem("userInfo", JSON.stringify(updatedUser));
+      console.log("4");
+    } catch (err) {
+      console.log("ERROR");
+      console.error(err);
+    }
+  };
 
   return (
     <AuthContext.Provider
@@ -107,6 +139,10 @@ export const AuthContextProvider = ({ children }) => {
         loginInfo,
         handleLoginInfo,
         loginUser,
+        profilePic,
+        setProfilePic,
+        setUser,
+        refreshUser,
       }}
     >
       {children}

@@ -14,16 +14,13 @@ export const ChatsPage = () => {
   const { selectedUser } = useContext(ChatsContext);
   return (
     <div
-      className="d-flex"
-      style={{
-        height:"95vh",
-        overflow:"hidden"
-      }}
+      className="chat-layout"
     >
-      <div>
-        <Sidebar />
-      </div>
-      <div className="d-flex flex-column w-100 h-80">
+      <Sidebar />
+
+      <div
+        className="chat-section"
+      >
         <ChatWindow />
 
         {selectedUser && <MessageInput />}

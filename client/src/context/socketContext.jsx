@@ -6,10 +6,10 @@ export const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
-  const { user } = useContext(AuthContext); // 👈 get user
+  const { user, refreshUser } = useContext(AuthContext); // 👈 get user
   const currentUser = user?.user;
   useEffect(() => {
-    const newSocket = io("http://localhost:5000");
+    const newSocket = io(import.meta.env.VITE_SOCKET_URL);
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
@@ -28,6 +28,21 @@ export const SocketProvider = ({ children }) => {
       newSocket.disconnect();
     };
   }, [currentUser?._id]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleFriendAdded = async () => {
+      console.log("Friend added event received");
+      await refreshUser();
+    };
+
+    socket.on("friend-added", handleFriendAdded);
+
+    return () => {
+      socket.off("friend-added", handleFriendAdded);
+    };
+  }, [socket, refreshUser]);
 
   // 2️ Emit online status when user is ready
   useEffect(() => {

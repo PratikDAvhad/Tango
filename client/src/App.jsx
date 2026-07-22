@@ -15,7 +15,11 @@ import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { PublicRoute } from "./routes/PublicRoute";
 import FriendRequests from "./pages/FriendsRequest";
 import AddFriend from "./pages/AddFriend";
-
+import { ChatsPage } from "./pages/ChatsPage";
+import SettingsPage from "./pages/SettingsPage";
+import ProfilePage from "./pages/ProfilePage";
+import StoriesPage from "./pages/StoriesPage";
+import AiPage from "./pages/AiPage";
 function App() {
   const { user } = useContext(AuthContext);
   console.log(user);
@@ -38,14 +42,6 @@ function App() {
             </PublicRoute>
           }
         />
-        <Route
-          path="/chats"
-          element={
-            <ProtectedRoute>
-              <MainPage />
-            </ProtectedRoute>
-          }
-        />
 
         <Route
           path="/addFriend"
@@ -64,7 +60,15 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<Navigate to={"/chats"} replace />} />
+
+        <Route
+          path="/*"
+          element={
+            <ProtectedRoute>
+              <MainPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   );

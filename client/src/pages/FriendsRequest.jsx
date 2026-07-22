@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { api } from "../api/axiosConfig";
+import { AuthContext } from "../context/authContext";
 
 export default function FriendRequests({ onAccept }) {
   const [requests, setRequests] = useState([]);
+  const { refreshUser } = useContext(AuthContext);
+  console.log(refreshUser);
 
   useEffect(() => {
     const fetch = async () => {
@@ -13,8 +16,23 @@ export default function FriendRequests({ onAccept }) {
   }, []);
 
   const accept = async (id) => {
+    console.log("Accepting:", id);
+
     await api.post("/friend/accept", { requestId: id });
-    setRequests((prev) => prev.filter((r) => r._id !== id));
+
+    console.log("Accepted successfully");
+
+    setRequests((prev) => {
+      console.log("Previous requests:", prev);
+
+      const updated = prev.filter((r) => r._id !== id);
+
+      console.log("Updated requests:", updated);
+
+      return updated;
+    });
+
+    await refreshUser();
     onAccept?.();
   };
 

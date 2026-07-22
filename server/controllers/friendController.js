@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const FriendRequest = require("../models/FriendRequest");
 const Conversation = require("../models/Conversation");
+const { getIo } = require("../socket");
 
 const sendRequest = async (req, res) => {
   try {
@@ -67,17 +68,33 @@ const acceptRequest = async (req, res) => {
 
   await request.save();
 
-  await User.findByIdAndUpdate(request.sender, {
-    $addToSet: { friends: request.reciever },
-  });
+  const senderUpdate = await User.findByIdAndUpdate(
+    request.sender,
+    {
+      $addToSet: { friends: request.reciever },
+    },
+    { new: true },
+  );
 
-  await User.findByIdAndUpdate(request.reciever, {
-    $addToSet: { friends: request.sender },
-  });
+  const receiverUpdate = await User.findByIdAndUpdate(
+    request.reciever,
+    {
+      $addToSet: { friends: request.sender },
+    },
+    { new: true },
+  );
+
+  console.log(senderUpdate.friends);
+  console.log(receiverUpdate.friends);
 
   await Conversation.create({
     participants: [request.sender, request.reciever],
   });
+
+  const io = getIo();
+
+  io.to(request.sender.toString()).emit("friend-added");
+  io.to(request.reciever.toString()).emit("friend-added");
 
   res.status(200).json({ message: "Friend added" });
 };
