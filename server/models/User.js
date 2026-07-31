@@ -25,6 +25,11 @@ const userSchema = new Schema(
         "https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2558760599.jpg",
     },
 
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 
     about: {

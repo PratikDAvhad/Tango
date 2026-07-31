@@ -13,7 +13,9 @@ const friendRoutes = require("./routes/friendRequestRoutes");
 const { initSocket } = require("./socket");
 const aiRoutes = require("./routes/aiRoutes");
 const storyRoutes = require("./routes/storyRoutes");
-
+const sendEmail = require("./utils/sendEmail");
+const otpRoutes = require("./routes/otpRoutes");
+ 
 connectDB();
 
 const onlineUsers = new Map();
@@ -40,6 +42,18 @@ app.use("/api/conversations", conversationRoutes);
 app.use("/api/friend", friendRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/story", storyRoutes);
+app.use("/api/otp", otpRoutes);
+
+app.get("/test-email", async (req, res) => {
+  console.log("In the testing phase");
+  await sendEmail(
+    "avhadpratik938@gmail.com",
+    "Tango Test",
+    "Email is working successfully!",
+  );
+
+  res.send("Email sent");
+});
 
 app.get("/", (req, res) => {
   res.send("<h1>Welcome to the chat application</h1>");

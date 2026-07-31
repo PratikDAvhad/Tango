@@ -1,8 +1,10 @@
 import React, { useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const navigate = useNavigate();
   const {
     registerInfo,
     handleRegisterInfo,
@@ -17,7 +19,7 @@ const Register = () => {
     <div className="container col-4 mt-5">
       <h3 className="mb-4 text-center">Create your account</h3>
 
-      <form onSubmit={registerUser}>
+      <form onSubmit={(e) => registerUser(e, navigate)}>
         {/* Profile Picture */}
         <div className="text-center mb-4">
           <input

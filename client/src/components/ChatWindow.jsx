@@ -119,6 +119,12 @@ export const ChatWindow = () => {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
+                  {/* SHOW ONLY FOR MY SENT MESSAGES */}
+                  {m.sender._id === currentUser._id && (
+                    <small className="text-white">
+                      {m.seenBy?.length > 1 ? "   Seen" : "   Sent"}
+                    </small>
+                  )}
                 </div>
 
                 <div className="message-actions">

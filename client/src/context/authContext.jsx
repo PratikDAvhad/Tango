@@ -1,9 +1,11 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import { api } from "../api/axiosConfig";
+import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [registerInfo, setRegisterInfo] = useState({
     name: "",
@@ -16,6 +18,12 @@ export const AuthContextProvider = ({ children }) => {
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
+  });
+
+  const [otpInfo, setOtpInfo] = useState({
+    userId: "",
+    email: "",
+    otp: "",
   });
 
   useEffect(() => {
@@ -46,6 +54,15 @@ export const AuthContextProvider = ({ children }) => {
     }));
   }, []);
 
+  const handleOtpInfo = useCallback((e) => {
+    const { name, value } = e.target;
+
+    setOtpInfo((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }, []);
+
   const registerUser = async (e) => {
     e.preventDefault();
 
@@ -62,15 +79,28 @@ export const AuthContextProvider = ({ children }) => {
       console.log("Image in profilePage : ProfilePic ====> ", profilePic);
 
       const res = await api.post("/auth/register", formData);
-      console.log("response below res", res.data);
-      localStorage.setItem(
-        "userInfo",
-        JSON.stringify({
-          user: res.data.user,
-          token: res.data.token,
-        }),
-      );
-      setUser(res.data);
+
+      // console.log("response below res", res.data);
+      // localStorage.setItem(
+      //   "userInfo",
+      //   JSON.stringify({
+      //     user: res.data.user,
+      //     token: res.data.token,
+      //   }),
+      // );
+      // setUser(res.data);
+
+      // SAVE OTP INFO
+      setOtpInfo({
+        userId: res.data.userId,
+        email: registerInfo.email,
+        otp: "",
+      });
+
+      alert("OTP sent to your email");
+
+      // GO TO VERIFY PAGE
+      navigate("/verify-email");
     } catch (err) {
       console.log("error", err);
       alert(err?.response?.data?.message);
@@ -93,9 +123,64 @@ export const AuthContextProvider = ({ children }) => {
         }),
       );
       setUser(res.data);
+      navigate("/chats");
     } catch (err) {
-      console.log("error", err);
-      alert(err?.response?.data?.message);
+      if (err.response?.data?.requiresVerification) {
+        setOtpInfo({
+          userId: err.response.data.userId,
+          email: err.response.data.email,
+          otp: "",
+        });
+
+        alert("Please verify your email. A new OTP has been sent.");
+
+        navigate("/verify-email");
+        return;
+      }
+
+      alert(err.response?.data?.message || "Login failed");
+    }
+  };
+
+  const verifyOtp = async (navigate) => {
+    try {
+      const res = await api.post("/otp/verify-email", {
+        userId: otpInfo.userId,
+        otp: otpInfo.otp,
+      });
+
+      // SAVE TOKEN + USER
+      localStorage.setItem(
+        "userInfo",
+        JSON.stringify({
+          user: res.data.user,
+          token: res.data.token,
+        }),
+      );
+
+      setUser({
+        user: res.data.user,
+        token: res.data.token,
+      });
+
+      alert("Email verified successfully!");
+
+      navigate("/chats");
+    } catch (err) {
+      console.error(err);
+      alert(err?.response?.data?.message || "OTP verification failed");
+    }
+  };
+
+  const resendOtp = async () => {
+    try {
+      await api.post("/otp/resend-otp", {
+        email: otpInfo.email,
+      });
+
+      alert("OTP resent successfully");
+    } catch (err) {
+      alert(err?.response?.data?.message || "Failed to resend OTP");
     }
   };
 
@@ -143,6 +228,12 @@ export const AuthContextProvider = ({ children }) => {
         setProfilePic,
         setUser,
         refreshUser,
+
+        otpInfo,
+        setOtpInfo,
+        handleOtpInfo,
+        verifyOtp,
+        resendOtp,
       }}
     >
       {children}

@@ -6,6 +6,7 @@ const {
   sendMessage,
   updateMessage,
   deleteMessage,
+  markAsSeen
 } = require("../controllers/messageController");
 const uploads = require("../middlewares/multerMiddleware");
 
@@ -13,5 +14,6 @@ router.get("/:convertationId", auth, getMessages);
 router.post("/send", auth, uploads.array("files", 10), sendMessage);
 router.put("/:messageId", auth, updateMessage);
 router.delete("/:messageId", auth, deleteMessage);
+router.put("/seen/:conversationId", auth, markAsSeen);
 
 module.exports = router;

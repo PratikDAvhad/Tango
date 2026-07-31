@@ -2,7 +2,7 @@ const Conversation = require("../models/Conversation");
 const Message = require("../models/Message");
 const User = require("../models/User");
 const { getIo } = require("../socket");
-const {uploadFiles} = require("../utils/uploadFiles");
+const { uploadFiles } = require("../utils/uploadFiles");
 
 const getMessages = async (req, res) => {
   try {
@@ -33,6 +33,7 @@ const sendMessage = async (req, res) => {
       conversation: conversationId,
       content: content || " ",
       attachments,
+      seenBy: [senderId],
     });
 
     console.log(message);
@@ -137,4 +138,53 @@ const deleteMessage = async (req, res) => {
   }
 };
 
-module.exports = { getMessages, sendMessage, updateMessage, deleteMessage };
+// controller for handling the seen and unseen messages
+const markAsSeen = async (req, res) => {
+  try {
+    const io = getIo();
+    const { conversationId } = req.params;
+
+    await Message.updateMany(
+      {
+        conversation: conversationId,
+        sender: { $ne: req.user._id },
+        seenBy: { $ne: req.user._id },
+      },
+      {
+        $addToSet: { seenBy: req.user._id },
+      },
+    );
+
+    // Get the conversation to access participants
+    const conversation = await Conversation.findById(conversationId);
+
+    if (conversation) {
+      conversation.participants.forEach((userId) => {
+        io.to(userId.toString()).emit("messages-seen", {
+          conversationId,
+          userId: req.user._id.toString(),
+        });
+      });
+    }
+
+    // io.to(conversationId).emit("messages-seen", {
+    //   conversationId,
+    //   userId: req.user._id,
+    // });
+
+    res.json({
+      message: "Messages marked as seen",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = {
+  getMessages,
+  sendMessage,
+  updateMessage,
+  deleteMessage,
+  markAsSeen,
+};

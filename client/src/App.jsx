@@ -6,10 +6,7 @@ import { Link } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { MainPage } from "./pages/MainPage";
-import { setAuthToken } from "./api/axiosConfig";
-import { useSocket } from "./context/socketContext";
-import { useContext, useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
+import { useContext } from "react";
 import { AuthContext } from "./context/authContext";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { PublicRoute } from "./routes/PublicRoute";
@@ -20,6 +17,7 @@ import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
 import StoriesPage from "./pages/StoriesPage";
 import AiPage from "./pages/AiPage";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
 function App() {
   const { user } = useContext(AuthContext);
   console.log(user);
@@ -69,6 +67,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
       </Routes>
     </>
   );

@@ -1,4 +1,5 @@
 const Conversation = require("../models/Conversation");
+const Message = require("../models/Message");
 
 const createOrGetConversation = async (req, res) => {
   try {
@@ -31,8 +32,25 @@ const getUserConversation = async (req, res) => {
       .populate("lastMessage")
       .sort({ updatedAt: -1 });
 
-    res.status(200).json(conversations);
+    // ADD UNREAD COUNT HERE
+    const conversationsWithUnread = await Promise.all(
+      conversations.map(async (conv) => {
+        const unreadCount = await Message.countDocuments({
+          conversation: conv._id,
+          sender: { $ne: userId },
+          seenBy: { $ne: userId },
+        });
+
+        return {
+          ...conv.toObject(),
+          unreadCount,
+        };
+      }),
+    )
+
+    res.status(200).json(conversationsWithUnread);
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Internal server error" });
   }
 };

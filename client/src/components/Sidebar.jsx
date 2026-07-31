@@ -76,17 +76,26 @@ export const Sidebar = () => {
 
                 {isUserOnline(other._id) && <span className="online-dot" />}
               </div>
-              <div className="d-flex px-3 justify-content-between">
-                <span className="chat-message">
+              <div className="d-flex px-3 justify-content-between align-items-center mt-1">
+                <span className="chat-message text-truncate">
                   {convo.lastMessage
                     ? convo.lastMessage.content
                     : "No messages yet"}
                 </span>
-                <span className="chat-date">
-                  {convo.lastMessage
-                    ? formatTime(convo.lastMessage.createdAt)
-                    : ""}
-                </span>
+
+                <div className="d-flex align-items-center gap-2">
+                  <span className="chat-date">
+                    {convo.lastMessage
+                      ? formatTime(convo.lastMessage.createdAt)
+                      : ""}
+                  </span>
+
+                  {convo.unreadCount > 0 && (
+                    <div className="unread-badge">
+                      {convo.unreadCount > 99 ? "99+" : convo.unreadCount}
+                    </div>
+                  )}
+                </div>
               </div>
             </li>
           );

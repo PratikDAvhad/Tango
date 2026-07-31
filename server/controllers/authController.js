@@ -3,11 +3,13 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const cloudinary = require("../config/cloudinary");
 const fs = require("fs");
+const sendEmail = require("../utils/sendEmail");
+const EmailVerification = require("../models/EmailVerification");
 
 const registerUser = async (req, res) => {
   try {
     console.log("In the register controller ");
-    console.log("req body in register", req.file);
+    console.log("req body in register", req.body);
     const { name, email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
@@ -16,7 +18,8 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    let profilePic = "https://res.cloudinary.com/dp70s4qu7/image/upload/v1784470092/pexels-batitay-japheth-43379766-16333664_wqhlvp.jpg";
+    let profilePic =
+      "https://res.cloudinary.com/dp70s4qu7/image/upload/v1784470092/pexels-batitay-japheth-43379766-16333664_wqhlvp.jpg";
 
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path, {
@@ -38,10 +41,30 @@ const registerUser = async (req, res) => {
       profilePic,
     });
 
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    res.status(201).json({ user, token });
+    await EmailVerification.deleteMany({ userId: user._id });
+
+    const savedVerification = await EmailVerification.create({
+      userId: user._id,
+      otp: otp,
+    });
+
+    console.log(savedVerification);
+
+    await sendEmail(
+      email,
+      "Verify your tango account",
+      `Your verification code is : ${otp}`,
+    );
+
+    res.status(201).json({
+      message: "OTP sent to your email",
+      userId: user._id.toString(),
+      email: user.email,
+    });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -57,15 +80,60 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    user.isEmailVerified = false;
+
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+    // =====================================
+    // EMAIL NOT VERIFIED
+    // =====================================
 
-    res.status(200).json({ user, token });
+    if (!user.isEmailVerified) {
+      // Remove old OTP
+      await EmailVerification.deleteMany({
+        userId: user._id,
+      });
+
+      // Generate new OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+      // Save OTP
+      await EmailVerification.create({
+        userId: user._id,
+        otp,
+      });
+
+      // Send email
+      await sendEmail(
+        user.email,
+        "Tango - Verify Your Email",
+        `Your verification code is: ${otp}`,
+      );
+
+      return res.status(403).json({
+        message: "Email not verified. OTP has been sent again.",
+        requiresVerification: true,
+        userId: user._id,
+        email: user.email,
+      });
+    }
+
+    // =====================================
+    // VERIFIED USER
+    // =====================================
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.json({
+      user,
+      token,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -34,7 +34,17 @@ export const ChatContextProvider = ({ children }) => {
   console.log(currentUser, " Current user in the chatsContext");
 
   useEffect(() => {
+    if (!selectedConversation) return;
     selectedConversationRef.current = selectedConversation;
+    const markSeen = async () => {
+      try {
+        await api.put(`/message/seen/${selectedConversation._id}`);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    markSeen();
   }, [selectedConversation]);
 
   // handling selection of user in sidebar
@@ -75,6 +85,11 @@ export const ChatContextProvider = ({ children }) => {
     console.log("Selected Conversation in the sidebar : ", convo);
     setSelectedConversation(convo);
     setSelectedUser(convo.participants.find((p) => p._id !== currentUser._id));
+
+    // RESET UNREAD COUNT
+    setConversations((prev) =>
+      prev.map((c) => (c._id === convo._id ? { ...c, unreadCount: 0 } : c)),
+    );
   };
 
   const fetchConversations = async () => {
@@ -116,24 +131,48 @@ export const ChatContextProvider = ({ children }) => {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on("receive-message", (message) => {
-      console.log("Recieved message in socket io in console : ", message);
-      console.log("Selected convertation in ", selectedConversationRef.current);
-      if (message.conversation._id === selectedConversationRef.current?._id) {
+    socket.on("receive-message", async (message) => {
+      console.log("Received message:", message);
+
+      const isCurrentConversation =
+        message.conversation._id === selectedConversationRef.current?._id;
+
+      if (isCurrentConversation) {
+        // Add message to chat window
         setChatMessages((prev) => [...prev, message]);
+
+        // If the message is from another user, mark it as seen immediately
+        if (message.sender._id !== currentUser._id) {
+          try {
+            await api.put(`/message/seen/${message.conversation._id}`);
+          } catch (err) {
+            console.error("Error marking message as seen:", err);
+          }
+        }
       }
 
-      setConversations((prev) =>
-        prev.map((convo) =>
-          convo._id === message.conversation._id
-            ? {
-                ...convo,
-                lastMessage: message,
-                updatedAt: Date.now(),
-              }
-            : convo,
-        ),
-      );
+      // Update sidebar conversations
+      setConversations((prev) => {
+        const updated = prev.map((convo) => {
+          if (convo._id !== message.conversation._id) return convo;
+
+          return {
+            ...convo,
+            lastMessage: message,
+            updatedAt: Date.now(),
+            unreadCount:
+              message.conversation._id !==
+                selectedConversationRef.current?._id &&
+              message.sender._id !== currentUser._id
+                ? (convo.unreadCount || 0) + 1
+                : convo.unreadCount || 0,
+          };
+        });
+
+        return updated.sort(
+          (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
+        );
+      });
     });
 
     socket.on("message-edited", (updatedMsg) => {
@@ -177,10 +216,31 @@ export const ChatContextProvider = ({ children }) => {
       );
     });
 
+    socket.on("messages-seen", ({ conversationId, userId }) => {
+      setChatMessages((prev) =>
+        prev.map((msg) => {
+          // only update messages from this conversation
+          if (msg.conversation._id !== conversationId) return msg;
+
+          // receiver's own messages don't need updating
+          if (msg.sender._id === userId) return msg;
+
+          // avoid duplicates
+          if (msg.seenBy?.includes(userId)) return msg;
+
+          return {
+            ...msg,
+            seenBy: [...(msg.seenBy || []), userId],
+          };
+        }),
+      );
+    });
+
     return () => {
       socket.off("receive-message");
       socket.off("message-edited");
       socket.off("message-deleted");
+      socket.off("messages-seen");
     };
   }, [socket]);
 
