@@ -11,6 +11,10 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendEmail = async (to, subject, text) => {
+  console.log("Connecting to Brevo...");
+
+  await transporter.verify();
+  console.log("SMTP verified");
   await transporter.sendMail({
     from: `"Tango" <${process.env.SENDER_EMAIL}>`,
     to,
