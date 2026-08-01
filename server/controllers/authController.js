@@ -106,14 +106,14 @@ const loginUser = async (req, res) => {
         userId: user._id,
         otp,
       });
-
+      console.log("Email is being sent");
       // Send email
       await sendEmail(
         user.email,
         "Tango - Verify Your Email",
         `Your verification code is: ${otp}`,
       );
-
+      console.log("Email has been sent");
       return res.status(403).json({
         message: "Email not verified. OTP has been sent again.",
         requiresVerification: true,
