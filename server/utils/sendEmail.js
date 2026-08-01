@@ -1,7 +1,10 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
+console.log("BREVO_EMAIL:", process.env.BREVO_EMAIL);
+console.log("BREVO_API_KEY exists:", !!process.env.BREVO_API_KEY);
 const transporter = nodemailer.createTransport({
+  
   host: "smtp-relay.brevo.com",
   port: 587,
   auth: {
