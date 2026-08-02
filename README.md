@@ -1,130 +1,161 @@
 # Tango 💬
 
-A full-stack real-time chat and social platform built using the MERN Stack. Tango enables secure messaging, AI-powered conversations, friend management, and Instagram-like Stories with real-time synchronization using Socket.IO.
+**Tango** is a modern **full-stack real-time chat and social platform** built using the **MERN Stack**. It combines secure messaging, AI-powered conversations, friend management, and Instagram-like Stories with **real-time synchronization using Socket.IO**.
 
 ---
 
 ## 🚀 Live Demo
 
-[ https://tango-1.onrender.com ]
+🔗 **Frontend:** https://tango-1.onrender.com
 
 ---
 
-## Features
+## ✨ Features
 
-### Authentication
-- JWT Authentication
-- Secure Login & Registration
-- Password Encryption using bcrypt
-- Protected Routes
+### 🔐 Authentication
 
-### Real-Time Chat
-- One-to-One Messaging
-- Real-Time Message Delivery
-- Edit/Delete Messages
-- Online/Offline Status
-- Last Message Preview
-- Conversation Management
+* JWT-based authentication
+* Secure user registration & login
+* Password hashing with **bcrypt**
+* Protected API routes
+* Persistent authentication using local storage
 
-### Friend System
-- Send Friend Requests
-- Accept / Reject Requests
-- Friends List
-- Pending Requests
-- Real-Time Friend Updates
+### 💬 Real-Time Chat
 
-### Stories
-- Upload Image & Video Stories
-- 24-Hour Auto Expiry (MongoDB TTL Index)
-- Story Viewer
-- Delete Own Stories
-- Real-Time Story Updates
-- Cloudinary Media Storage
+* One-to-one private messaging
+* Instant message delivery using **Socket.IO**
+* Edit & delete messages
+* Read receipts (Seen / Unseen messages)
+* Online / Offline presence indicator
+* Last message preview in sidebar
+* Unread message count badges
+* Conversation management
 
-### AI Chat
-- Integrated Google Gemini API
-- Dedicated AI Chat Window
-- Persistent AI Conversations
+### 👥 Friend System
 
-### User Profile
-- Update Profile Information
-- Change Profile Picture
-- About Section
-- Location & Phone Number
-- Change Password
+* Send friend requests
+* Accept / reject requests
+* Real-time friend request notifications
+* Friends list management
+* Pending requests tracking
+* Automatic conversation creation after acceptance
 
-### Media Upload
-- Cloudinary Integration
-- Image Upload
-- Video Upload
-- Automatic File Cleanup
+### 📸 Stories
 
-### Deployment
-- Frontend hosted on Render
-- Backend hosted on Render
-- MongoDB Atlas Database
+* Upload image & video stories
+* 24-hour automatic expiry using **MongoDB TTL Index**
+* View friends' stories
+* Delete your own stories
+* Real-time story synchronization
+* Cloudinary-powered media storage
+
+### 🤖 AI Chat
+
+* Integrated **Google Gemini API**
+* Dedicated AI conversation window
+* Persistent AI chat history
+* Context-aware responses
+
+### 👤 User Profile
+
+* Update profile information
+* Change profile picture
+* Add bio / about section
+* Update location & phone number
+* Change password securely
+
+### ☁️ Media Uploads
+
+* **Cloudinary Integration**
+* Image uploads
+* Video uploads
+* Automatic temporary file cleanup
+* Optimized media delivery
+
+### 🌐 Deployment
+
+* **Frontend:** Render
+* **Backend:** Render
+* **Database:** MongoDB Atlas
+* **Media Storage:** Cloudinary
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 ### Frontend
-- React
-- React Router
-- Context API
-- Axios
-- Bootstrap
-- Socket.IO Client
+
+* **React.js**
+* **React Router DOM**
+* **Context API**
+* **Axios**
+* **Bootstrap 5**
+* **Socket.IO Client**
 
 ### Backend
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- Socket.IO
-- JWT
-- bcrypt
-- Multer
-- Cloudinary
 
-### Database
-- MongoDB Atlas
+* **Node.js**
+* **Express.js**
+* **MongoDB**
+* **Mongoose**
+* **Socket.IO**
+* **JWT (jsonwebtoken)**
+* **bcryptjs**
+* **Multer**
+* **Cloudinary**
 
-### AI
-- Google Gemini API
+### Database & Services
 
----
-
-## Folder Structure
-
-```
-client/
-    src/
-        components/
-        context/
-        pages/
-        api/
-
-server/
-    controllers/
-    middleware/
-    models/
-    routes/
-    utils/
-    socket.js
-```
+* **MongoDB Atlas**
+* **Cloudinary**
+* **Google Gemini API**
 
 ---
 
-## Installation
+## 📁 Project Structure
 
-### Clone Repository
+```
+Tango/
+│
+├── client/
+│   ├── public/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   └── package.json
+│
+├── server/
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── utils/
+│   ├── socket.js
+│   ├── index.js
+│   └── package.json
+│
+└── README.md
+```
+
+---
+
+## ⚙️ Installation
+
+### 1️⃣ Clone the Repository
 
 ```bash
 git clone https://github.com/PratikDAvhad/Tango.git
+cd Tango
 ```
 
-### Backend
+---
+
+## 🔧 Backend Setup
 
 ```bash
 cd server
@@ -132,7 +163,11 @@ npm install
 npm run dev
 ```
 
-### Frontend
+Server will run on **http://localhost:5000** (or your configured port).
+
+---
+
+## 🎨 Frontend Setup
 
 ```bash
 cd client
@@ -140,63 +175,191 @@ npm install
 npm run dev
 ```
 
+Frontend will run on **http://localhost:5173**.
+
 ---
 
-## Environment Variables
+## 🔑 Environment Variables
 
-### Backend (.env)
+### Backend (`server/.env`)
 
 ```env
-PORT=
-MONGO_URI=
-JWT_SECRET=
-CLIENT_URL=
+PORT=5000
+MONGO_URI=your_mongodb_atlas_uri
+JWT_SECRET=your_jwt_secret
+CLIENT_URL=http://localhost:5173
 
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
-GEMINI_API_KEY=
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
-### Frontend (.env)
+### Frontend (`client/.env`)
 
 ```env
-VITE_API_URL=
-VITE_SOCKET_URL=
+VITE_API_URL=http://localhost:5000/api
+VITE_SOCKET_URL=http://localhost:5000
 ```
 
 ---
 
-## Screenshots
+## 📡 Real-Time Events
 
-- Authentication
-- Real-Time Chat
-- Friend Requests
-- Stories
-- AI Chat
-- Profile Page
+Tango uses **Socket.IO** for real-time communication.
 
-(Add screenshots here)
+### Implemented Events
 
----
-
-## Future Improvements
-
-- Group Chats
-- Message Reactions
-- Voice & Video Calling
-- Read Receipts
-- Push Notifications
-- Story Likes & Replies
-- End-to-End Encryption
+| Event                     | Description                            |
+| ------------------------- | -------------------------------------- |
+| `setup`                   | Join user-specific room                |
+| `user-online`             | Mark user as online                    |
+| `online-users`            | Broadcast online users                 |
+| `receive-message`         | Receive new message                    |
+| `message-edited`          | Update edited message                  |
+| `message-deleted`         | Remove deleted message                 |
+| `messages-seen`           | Update read receipts                   |
+| `friend-added`            | Refresh conversations after friendship |
+| `friend-request-received` | Real-time incoming friend request      |
+| `friend-request-declined` | Real-time decline notification         |
 
 ---
 
-## Author
+## 📸 Screenshots
+
+Add your screenshots inside a `screenshots/` folder and update the paths below.
+
+### 🔐 Authentication
+
+```md
+![Login](screenshots/login.png)
+```
+
+### 💬 Real-Time Chat
+
+```md
+![Chat](screenshots/chat.png)
+```
+
+### 👥 Friend Requests
+
+```md
+![Friend Requests](screenshots/friend-requests.png)
+```
+
+### 📸 Stories
+
+```md
+![Stories](screenshots/stories.png)
+```
+
+### 🤖 AI Chat
+
+```md
+![AI Chat](screenshots/ai-chat.png)
+```
+
+### 👤 Profile Page
+
+```md
+![Profile](screenshots/profile.png)
+```
+
+---
+
+## 🧪 API Highlights
+
+### Authentication
+
+```http
+POST /api/auth/register
+POST /api/auth/login
+```
+
+### Messages
+
+```http
+GET    /api/message/:conversationId
+POST   /api/message/send
+PUT    /api/message/:messageId
+DELETE /api/message/:messageId
+PUT    /api/message/seen/:conversationId
+```
+
+### Friends
+
+```http
+POST /api/friend/send
+GET  /api/friend/pending
+POST /api/friend/accept
+POST /api/friend/decline
+```
+
+### Stories
+
+```http
+POST   /api/story
+GET    /api/story/friends
+DELETE /api/story/:storyId
+```
+
+---
+
+## 🔮 Future Improvements
+
+* 👨‍👩‍👧‍👦 Group Chats
+* 😄 Message Reactions & Emojis
+* 🔔 Push Notifications
+* ❤️ Story Likes & Replies
+* 🔒 End-to-End Encryption
+* 📱 Progressive Web App (PWA)
+* 🔍 Message Search & Filters
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the repository
+2. Create a new branch
+
+```bash
+git checkout -b feature/your-feature-name
+```
+
+3. Commit your changes
+
+```bash
+git commit -m "Add your feature"
+```
+
+4. Push to the branch
+
+```bash
+git push origin feature/your-feature-name
+```
+
+5. Open a Pull Request
+
+---
+
+## 👨‍💻 Author
 
 **Pratik Avhad**
 
-GitHub: https://github.com/PratikDAvhad
+* 🌐 GitHub: https://github.com/PratikDAvhad
+* 💼 LinkedIn: https://www.linkedin.com/in/pratik-avhad
 
 ---
+
+## ⭐ Support
+
+If you like this project, consider giving it a **⭐ Star** on GitHub — it helps others discover the project and motivates further development! 🚀
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
