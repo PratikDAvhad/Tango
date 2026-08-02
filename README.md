@@ -18,7 +18,6 @@
 * Secure user registration & login
 * Password hashing with **bcrypt**
 * Protected API routes
-* Persistent authentication using local storage
 
 ### 💬 Real-Time Chat
 
@@ -53,7 +52,6 @@
 
 * Integrated **Google Gemini API**
 * Dedicated AI conversation window
-* Persistent AI chat history
 * Context-aware responses
 
 ### 👤 User Profile
