@@ -35,7 +35,7 @@ const Navbar = () => {
         console.log("Fetched requests:", data);
 
         setRequests(data || []);
-      } catch (err) { 
+      } catch (err) {
         console.error(err);
       }
     };
@@ -53,6 +53,16 @@ const Navbar = () => {
   useEffect(() => {
     if (!socket) return;
 
+    // new friend request
+    const handleRequestReceived = (request) => {
+      setRequests((prev) => {
+        // avoid duplicates
+        if (prev.some((r) => r._id === request._id)) return prev;
+
+        return [request, ...prev];
+      });
+    };
+
     const handleDeclined = (data) => {
       setNotifications((prev) => [
         {
@@ -63,9 +73,11 @@ const Navbar = () => {
       ]);
     };
 
+    socket.on("friend-request-received", handleRequestReceived);
     socket.on("friend-request-declined", handleDeclined);
 
     return () => {
+      socket.off("friend-request-received", handleRequestReceived);
       socket.off("friend-request-declined", handleDeclined);
     };
   }, [socket]);
@@ -142,13 +154,14 @@ const Navbar = () => {
         {user && (
           <div className="notification-wrapper position-relative" ref={ref}>
             <button
-              className="btn btn-light position-relative"
+              className="notification-bell"
               onClick={() => setOpen((p) => !p)}
             >
-              🔔
+              <i className="fa-solid fa-bell"></i>
+
               {totalNotifications > 0 && (
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {totalNotifications}
+                <span className="notification-badge">
+                  {totalNotifications > 99 ? "99+" : totalNotifications}
                 </span>
               )}
             </button>

@@ -7,6 +7,8 @@ const sendRequest = async (req, res) => {
   try {
     const senderId = req.user._id;
 
+    const io = getIo();
+
     const { email } = req.body;
 
     const reciever = await User.findOne({ email });
@@ -35,10 +37,16 @@ const sendRequest = async (req, res) => {
       return res.status(400).json({ message: "Request already sent." });
     }
 
-    await FriendRequest.create({
+    const newRequest = await FriendRequest.create({
       sender: senderId,
       reciever: reciever._id,
     });
+
+    // populate sender details so frontend can show them immediately
+    await newRequest.populate("sender", "name profilePic email");
+
+    // 🔥 notify receiver in real time
+    io.to(reciever._id.toString()).emit("friend-request-received", newRequest);
 
     res.json({ message: "Friend request sent." });
   } catch (err) {
