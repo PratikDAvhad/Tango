@@ -1,51 +1,105 @@
-import { useContext, useEffect, useState } from "react";
+
+import { useContext } from "react";
 import { api } from "../api/axiosConfig";
 import { AuthContext } from "../context/authContext";
 
-export default function FriendRequests({ onAccept }) {
-  const [requests, setRequests] = useState([]);
+export default function FriendRequests({
+  requests,
+  setRequests,
+}) {
   const { refreshUser } = useContext(AuthContext);
-  console.log(refreshUser);
 
-  useEffect(() => {
-    const fetch = async () => {
-      const { data } = await api.get("/friend/pending");
-      setRequests(data);
-    };
-    fetch();
-  }, []);
+  console.log("FriendRequests received:", requests);
 
+  // ==========================
+  // Accept request
+  // ==========================
   const accept = async (id) => {
-    console.log("Accepting:", id);
+    try {
+      await api.post("/friend/accept", {
+        requestId: id,
+      });
 
-    await api.post("/friend/accept", { requestId: id });
+      // remove locally
+      setRequests((prev) =>
+        prev.filter((r) => r._id !== id)
+      );
 
-    console.log("Accepted successfully");
+      // // refresh logged in user data
+      // await refreshUser();
 
-    setRequests((prev) => {
-      console.log("Previous requests:", prev);
-
-      const updated = prev.filter((r) => r._id !== id);
-
-      console.log("Updated requests:", updated);
-
-      return updated;
-    });
-
-    await refreshUser();
-    onAccept?.();
+      // notify chats sidebar
+      window.dispatchEvent(new Event("friend-added"));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  if (requests.length === 0) {
-    return <p className="empty-text">No new requests</p>;
+  // ==========================
+  // Decline request
+  // ==========================
+  const decline = async (id) => {
+    try {
+      await api.post("/friend/decline", {
+        requestId: id,
+      });
+
+      // remove locally
+      setRequests((prev) =>
+        prev.filter((r) => r._id !== id)
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Nothing to show
+  if (!requests || requests.length === 0) {
+    return null;
   }
 
   return (
     <>
       {requests.map((req) => (
-        <div key={req._id} className="notification-item">
-          <span>{req.sender.name}</span>
-          <button onClick={() => accept(req._id)}>Accept</button>
+        <div
+          key={req._id}
+          className="d-flex justify-content-between align-items-center gap-3 border-bottom pb-2 mb-2"
+        >
+          <div className="d-flex align-items-center gap-2">
+            <img
+              src={req.sender.profilePic}
+              alt={req.sender.name}
+              width={35}
+              height={35}
+              className="rounded-circle object-fit-cover"
+            />
+
+            <div>
+              <div className="fw-semibold">
+                {req.sender.name}
+              </div>
+
+              <small className="text-muted">
+                sent you a friend request
+              </small>
+            </div>
+          </div>
+
+          <div className="d-flex gap-2">
+            <button
+              className="btn btn-sm btn-success"
+              onClick={() => accept(req._id)}
+            >
+              Accept
+            </button>
+
+            <button
+              className="btn btn-sm btn-outline-danger"
+              onClick={() => decline(req._id)}
+            >
+              Decline
+            </button>
+          </div>
         </div>
       ))}
     </>

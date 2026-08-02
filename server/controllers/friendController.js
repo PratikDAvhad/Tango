@@ -51,7 +51,7 @@ const getPendingRequests = async (req, res) => {
     reciever: req.user._id,
     status: "pending",
   }).populate("sender", "name profilePic email");
-
+  console.log("In getPending Req", req.user._id);
   res.status(200).json(requests);
 };
 
@@ -99,4 +99,34 @@ const acceptRequest = async (req, res) => {
   res.status(200).json({ message: "Friend added" });
 };
 
-module.exports = { sendRequest, getPendingRequests, acceptRequest };
+const declineRequest = async (req, res) => {
+  try {
+    const { requestId } = req.body;
+
+    const request = await FriendRequest.findById(requestId);
+
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    await FriendRequest.findByIdAndDelete(requestId);
+
+    const io = getIo();
+
+    io.to(request.sender.toString()).emit("friend-request-declined", {
+      message: "Your friend request was declined.",
+    });
+
+    res.status(200).json({
+      message: "Friend request declined",
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+module.exports = {
+  sendRequest,
+  getPendingRequests,
+  acceptRequest,
+  declineRequest,
+};

@@ -19,7 +19,7 @@ const registerUser = async (req, res) => {
     }
 
     let profilePic =
-      "https://res.cloudinary.com/dp70s4qu7/image/upload/v1784470092/pexels-batitay-japheth-43379766-16333664_wqhlvp.jpg";
+      "https://res.cloudinary.com/dp70s4qu7/image/upload/v1785668420/blank-profile-picture-973460_960_720_ukswgg.webp";
 
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path, {

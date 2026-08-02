@@ -6,54 +6,66 @@ export const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
-  const { user, refreshUser } = useContext(AuthContext); // 👈 get user
+  const [onlineUsers, setOnlineUsers] = useState([]);
+
+  const { user, refreshUser } = useContext(AuthContext);
   const currentUser = user?.user;
+
   useEffect(() => {
-    const newSocket = io(import.meta.env.VITE_SOCKET_URL);
+    const newSocket = io(import.meta.env.VITE_SOCKET_URL, {
+      transports: ["websocket"],
+    });
+
     setSocket(newSocket);
 
-    newSocket.on("connect", () => {
-      console.log("Socket connected", newSocket.id);
-      if (currentUser?._id) {
-        newSocket.emit("setup", currentUser._id);
-        console.log("Setup emitted for user:", currentUser._id);
-      }
-    });
+    return () => newSocket.disconnect();
+  }, []);
 
-    newSocket.on("disconnect", () => {
-      console.log("socket disconnected");
-    });
+  useEffect(() => {
+    if (!socket || !currentUser?._id) return;
+
+    const announce = () => {
+      socket.emit("setup", currentUser._id);
+      socket.emit("user-online", currentUser._id);
+    };
+
+    if (socket.connected) announce();
+
+    socket.on("connect", announce);
+
+    return () => socket.off("connect", announce);
+  }, [socket, currentUser?._id]);
+
+  // GLOBAL online users listener
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleOnlineUsers = (users) => {
+      console.log("Online users:", users);
+      setOnlineUsers(users);
+    };
+
+    socket.on("online-users", handleOnlineUsers);
 
     return () => {
-      newSocket.disconnect();
+      socket.off("online-users", handleOnlineUsers);
     };
-  }, [currentUser?._id]);
+  }, [socket]);
 
   useEffect(() => {
     if (!socket) return;
 
     const handleFriendAdded = async () => {
-      console.log("Friend added event received");
       await refreshUser();
     };
 
     socket.on("friend-added", handleFriendAdded);
 
-    return () => {
-      socket.off("friend-added", handleFriendAdded);
-    };
+    return () => socket.off("friend-added", handleFriendAdded);
   }, [socket, refreshUser]);
 
-  // 2️ Emit online status when user is ready
-  useEffect(() => {
-    if (!socket || !currentUser?._id) return;
-
-    socket.emit("user-online", currentUser._id);
-    console.log("User online emitted:", currentUser._id);
-  }, [socket, currentUser?._id]);
-
   return (
-    <SocketContext.Provider value={{ socket }}>
+    <SocketContext.Provider value={{ socket, onlineUsers }}>
       {children}
     </SocketContext.Provider>
   );

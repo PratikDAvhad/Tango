@@ -9,7 +9,7 @@ export const Sidebar = () => {
     currentUser,
     allUsers,
     startChatWithUser,
-    isUserOnline,
+    onlineUsers,
   } = useContext(ChatsContext);
 
   console.log("All the conversations : ", conversations);
@@ -74,7 +74,9 @@ export const Sidebar = () => {
               <div className="d-flex justify-content-between align-items-center px-3">
                 <span className="chat-name">{other?.name}</span>
 
-                {isUserOnline(other._id) && <span className="online-dot" />}
+                {onlineUsers?.includes(other._id) && (
+                  <span className="online-dot" />
+                )}
               </div>
               <div className="d-flex px-3 justify-content-between align-items-center mt-1">
                 <span className="chat-message text-truncate">

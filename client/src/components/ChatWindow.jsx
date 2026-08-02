@@ -10,7 +10,7 @@ export const ChatWindow = () => {
     selectedUser,
     endRef,
     chatMessages,
-    isUserOnline,
+    onlineUsers,
     handleEdit,
     editingMessageId,
     setEditedText,
@@ -34,7 +34,7 @@ export const ChatWindow = () => {
       {/* HEADER */}
       <div className="chat-header border-bottom px-3 py-2 d-flex justify-content-between">
         <strong>{selectedUser.name}</strong>
-        <h6>{isUserOnline(selectedUser?._id) ? "Online" : "Offline"}</h6>
+        <h6>{onlineUsers?.includes(selectedUser?._id) ? "Online" : "Offline"}</h6>
       </div>
 
       {/* MESSAGES */}

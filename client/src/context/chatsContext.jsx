@@ -21,12 +21,11 @@ export const ChatContextProvider = ({ children }) => {
   const [conversations, setConversations] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
   const [text, setText] = useState("");
-  const [onlineUsers, setOnlineUsers] = useState([]);
   const selectedConversationRef = useRef(null);
   const [attachments, setAttachments] = useState([]);
   const [sending, setSending] = useState(false);
 
-  const { socket } = useContext(SocketContext);
+  const { socket, onlineUsers  } = useContext(SocketContext);
   const { user } = useContext(AuthContext);
   const { activePage } = useContext(GeneralContext);
 
@@ -131,6 +130,16 @@ export const ChatContextProvider = ({ children }) => {
   useEffect(() => {
     if (!socket) return;
 
+    socket.on("friend-added", async () => {
+      console.log("Friend added event received");
+
+      try {
+        await fetchConversations();
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
     socket.on("receive-message", async (message) => {
       console.log("Received message:", message);
 
@@ -233,7 +242,7 @@ export const ChatContextProvider = ({ children }) => {
             seenBy: [...(msg.seenBy || []), userId],
           };
         }),
-      );
+      );  
     });
 
     return () => {
@@ -241,25 +250,11 @@ export const ChatContextProvider = ({ children }) => {
       socket.off("message-edited");
       socket.off("message-deleted");
       socket.off("messages-seen");
+      socket.off("friend-added");
     };
   }, [socket]);
 
-  //getOnline Users
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleOnlineUsers = (users) => {
-      setOnlineUsers(users);
-    };
-
-    socket.on("online-users", handleOnlineUsers);
-
-    return () => socket.off("online-users", handleOnlineUsers);
-  }, [socket]);
-
-  const isUserOnline = (userId) => {
-    return onlineUsers.includes(userId);
-  };
+  
 
   //getting chat messages in the chat window
   useEffect(() => {
@@ -408,7 +403,7 @@ export const ChatContextProvider = ({ children }) => {
         allUsers,
         startChatWithUser,
         currentUser,
-        isUserOnline,
+        onlineUsers,
         handleEdit,
         editingMessageId,
         setEditedText,
